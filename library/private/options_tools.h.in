@@ -193,6 +193,31 @@ color_t parse(const std::string& str)
 {
   try
   {
+  if (!str.empty() && str[0] == '#')
+  {
+  	if (str.length() == 7)
+  	{
+      	int r, g, b;
+      	if (sscanf(str.c_str(), "#%02x%02x%02x", &r, &g, &b) == 3)
+      	{
+          	// Returned as double vector rounded to ten's place
+          	return color_t(std::vector<double>{
+            	std::round((r / 255.0) * 10) / 10,
+            	std::round((g / 255.0) * 10) / 10,
+            	std::round((b / 255.0) * 10) / 10
+          	});
+      	}
+      	else
+      	{
+          	throw options::parsing_exception("Invalid hexadecimal format in " + str);
+      	}
+  	}
+    	else
+    	{
+        	throw options::parsing_exception("Invalid hexadecimal color format, must be 7 characters including '#' in " + str);
+    	}
+  }
+
     return color_t(options_tools::parse<std::vector<double>>(str));
   }
   catch (const f3d::type_construction_exception& ex)

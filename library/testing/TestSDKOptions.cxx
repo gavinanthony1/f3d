@@ -134,6 +134,26 @@ int TestSDKOptions(int argc, char* argv[])
   test.expect<f3d::options::incompatible_exception>("set color with incorrect size",
     [&]() { opt.set("render.background.color", std::vector<double>{ 0.1, 0.2 }); });
 
+  // Test color_t with hexadecimal
+  opt.setAsString("render.background.color", "#FF5733");
+  test("setAsString hex color", opt.getAsString("render.background.color") == "1,0.3,0.2");
+
+  opt.setAsString("render.background.color", "#abcdef");
+  test("setAsString hex color lowercase", opt.getAsString("render.background.color") == "0.7,0.8,0.9");
+
+  test.expect<f3d::options::parsing_exception>(
+    "setAsString invalid hex color", [&]() { opt.setAsString("render.background.color", "#XYZ123"); });
+
+  test.expect<f3d::options::parsing_exception>(
+    "setAsString short hex color", [&]() { opt.setAsString("render.background.color", "#123"); });
+
+  test.expect<f3d::options::parsing_exception>(
+    "setAsString long hex color", [&]() { opt.setAsString("render.background.color", "#1234567"); });
+
+  test.expect<f3d::options::parsing_exception>(
+    "setAsString missing # in hex color", [&]() { opt.setAsString("render.background.color", "123456"); });
+
+
   // Test closest option
   auto closest = opt.getClosestOption("modle.sciivs.cell");
   test("closest option", closest.first == "model.scivis.cells" && closest.second == 5);

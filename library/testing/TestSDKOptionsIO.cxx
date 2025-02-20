@@ -94,6 +94,23 @@ int TestSDKOptionsIO(int argc, char* argv[])
   test.parse<std::vector<int>>("std::vector<int>", "1,2,3", { 1, 2, 3 });
   test.format<std::vector<int>>("std::vector<int>", { 1, 2, 3 }, "1,2,3");
 
+  // Hex color parsing tests
+  test.parse<f3d::color_t>("vector (hex)", "#FF5733", {1, 0.3, 0.2});
+  test.parse<f3d::color_t>("vector (hex)", "#00FF00", {0, 1, 0});
+  test.parse<f3d::color_t>("vector (hex)", "#0000FF", {0, 0, 1});
+  test.parse<f3d::color_t>("vector (hex)", "#ABCDEF", {0.7, 0.8, 0.9});
+
+  // Invalid hex values
+  test.parse_expect<f3d::color_t, parsing_exception>("invalid vector (hex)", "#123");
+  test.parse_expect<f3d::color_t, parsing_exception>("invalid vector (hex)", "#FF5733FF");
+  test.parse_expect<f3d::color_t, parsing_exception>("invalid vector (hex)", "#0a0a0a80");
+  test.parse_expect<f3d::color_t, parsing_exception>("invalid vector (hex)", "#GGGGGG");
+  test.parse_expect<f3d::color_t, parsing_exception>("invalid vector (hex)", "#");
+  test.parse_expect<f3d::color_t, parsing_exception>("invalid vector (hex)", "#12345");
+  test.parse_expect<f3d::color_t, parsing_exception>("invalid vector (hex)", "#1234567");
+  test.parse_expect<f3d::color_t, parsing_exception>("invalid vector (hex)", "123456");
+
+
   test.parse<std::vector<double>>("std::vector<double>", "0.1,0.2,0.3", { 0.1, 0.2, 0.3 });
   test.parse<std::vector<double>>("std::vector<double>", "  0.1,  0.2 , 0.3 ", { 0.1, 0.2, 0.3 });
   test.format<std::vector<double>>("std::vector<double>", { 0.1, 0.2, 0.3 }, "0.1,0.2,0.3");
